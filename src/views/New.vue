@@ -15,10 +15,12 @@
       <label for="description">Описание</label>
       <textarea v-model.trim="description" id="description"></textarea>
     </div>
-    <router-link to="/home">
-      <button class="btn primary" :disabled="disabled">Создать</button>
-    </router-link>
+    <button class="btn primary" :disabled="disabled">Создать</button>
   </form>
+  <button @click="getServer">kkkkk</button>
+  <div class="card" v-for="item in tasksDataBase" :key="item">
+    {{ item }}
+  </div>
 </template>
 <script>
 import { ref, reactive, toRefs, onUpdated } from 'vue'
@@ -41,6 +43,7 @@ export default {
     onUpdated(() => {
       if (task.title !== '' && task.description !== '' && task.data !== null) {
         task.disabled = false
+        console.log(task.disabled)
         if (task.data > new Date().toJSON().slice(0, 10)) {
           console.log('max')
         } else {
@@ -48,11 +51,13 @@ export default {
         }
       } else {
         task.disabled = true
+        console.log(task.disabled)
       }
     })
+
     async function sendServer() {
-      await fetch(
-        'https://vue-database-57694-default-rtdb.firebaseio.com/tasks.json',
+      const response = await fetch(
+        'https://vue-database-57694-default-rtdb.firebaseio.com/task.json',
         {
           method: 'POST',
           headers: {
@@ -66,8 +71,8 @@ export default {
           })
         }
       )
-      // const dataBase = await response.json()
-      // console.log(dataBase)
+      const dataBase = await response.json()
+      console.log(dataBase)
 
       task.counter++
       task.title = ''
@@ -76,17 +81,28 @@ export default {
     }
 
     async function getServer() {
-      const response = await fetch(
-        'https://vue-database-57694-default-rtdb.firebaseio.com/tasks.json'
-      )
-      const data = await response.json()
-      // console.log(data)
-      tasksDataBase.value = Object.keys(data).map(key => {
-        return {
-          id: key,
-          ...data[key]
+      setTimeout(async () => {
+        try {
+          const response = await fetch(
+            'https://vue-database-57694-default-rtdb.firebaseio.com/task.json'
+          )
+
+          if (!response) {
+            throw new Error('The database is empty!!!!')
+          }
+
+          const data = await response.json()
+          console.log(data)
+          tasksDataBase.value = Object.keys(data).map(key => {
+            return {
+              id: key,
+              ...data[key]
+            }
+          })
+        } catch (error) {
+          console.warn('Error!!!!!')
         }
-      })
+      }, 1500)
     }
 
     return {
