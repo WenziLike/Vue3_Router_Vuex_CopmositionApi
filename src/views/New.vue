@@ -1,117 +1,42 @@
 <template>
-  <form class="card" @submit.prevent="sendServer">
-    <h1>Создать новую задачу</h1>
-    <div class="form-control">
-      <label for="title">Название</label>
-      <input v-model.trim="title" type="text" id="title" />
-    </div>
-
-    <div class="form-control">
-      <label for="date">Дата дэдлайна</label>
-      <input v-model.lazy="data" type="date" id="date" />
-    </div>
-
-    <div class="form-control">
-      <label for="description">Описание</label>
-      <textarea v-model.trim="description" id="description"></textarea>
-    </div>
-    <button class="btn primary" :disabled="disabled">Создать</button>
-  </form>
-  <button @click="getServer">kkkkk</button>
-  <div class="card" v-for="item in tasksDataBase" :key="item">
-    {{ item }}
-  </div>
+    <form class="card" @click.prevent="$emit('sendForm')">
+        <h1>Создать новую задачу</h1>
+        <div class="form-control" v-for="item in formDesc" :key="item.id"
+             @change="$emit('selectedItem',$event.target)">
+            <label :for="item.id" v-if="item.type">
+                {{ item.title }}
+                <input :type="item.type"
+                       :id="item.id"
+                       ref="arr"
+                       @click="$event.stopPropagation()">
+            </label>
+            <label :for="item.id" v-else>
+                {{ item.title }}
+                <textarea :id="item.id"></textarea>
+            </label>
+        </div>
+        <button class="btn primary">Создать</button>
+    </form>
 </template>
+
 <script>
-import { ref, reactive, toRefs, onUpdated } from 'vue'
 
 export default {
-  setup() {
-    const task = reactive({
-      title: '',
-      data: null,
-      description: '',
-      disabled: true,
-      counter: 1,
-      status: value => {
-        return ['active', 'done', 'cancelled', 'pending'].includes(value)
-      }
-    })
-
-    const tasksDataBase = ref([])
-
-    onUpdated(() => {
-      if (task.title !== '' && task.description !== '' && task.data !== null) {
-        task.disabled = false
-        console.log(task.disabled)
-        if (task.data > new Date().toJSON().slice(0, 10)) {
-          console.log('max')
-        } else {
-          console.log('min')
-        }
-      } else {
-        task.disabled = true
-        console.log(task.disabled)
-      }
-    })
-
-    async function sendServer() {
-      const response = await fetch(
-        'https://vue-database-57694-default-rtdb.firebaseio.com/task.json',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            title: task.title,
-            data: task.data,
-            description: task.description,
-            counter: task.counter
-          })
-        }
-      )
-      const dataBase = await response.json()
-      console.log(dataBase)
-
-      task.counter++
-      task.title = ''
-      task.data = null
-      task.description = ''
-    }
-
-    async function getServer() {
-      setTimeout(async () => {
-        try {
-          const response = await fetch(
-            'https://vue-database-57694-default-rtdb.firebaseio.com/task.json'
-          )
-
-          if (!response) {
-            throw new Error('The database is empty!!!!')
-          }
-
-          const data = await response.json()
-          console.log(data)
-          tasksDataBase.value = Object.keys(data).map(key => {
-            return {
-              id: key,
-              ...data[key]
+    emits: {
+        sendForm: null,
+        selectedItem(event) {
+            if (event.value) {
+                return true
             }
-          })
-        } catch (error) {
-          console.warn('Error!!!!!')
+            confirm('Вы уверенны что хотите оставить поле пустым???')
+            return false
         }
-      }, 1500)
+    },
+    props: {
+        formDesc: {
+            type: Object,
+            required: true
+        }
     }
-
-    return {
-      ...toRefs(task),
-      task,
-      tasksDataBase,
-      sendServer,
-      getServer
-    }
-  }
 }
 </script>

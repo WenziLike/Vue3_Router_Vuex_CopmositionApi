@@ -1,6 +1,6 @@
 <template>
   <h1 class="text-white center">Задач пока нет</h1>
-  <template>
+  <template >
     <h3 class="text-white">Всего активных задач: 0</h3>
     <div class="card">
       <h2 class="card-title">
@@ -10,13 +10,11 @@
       <p>
         <strong>
           <small>
-            {{ new Date().toLocaleDateString() }}
+            {{new Date().toLocaleDateString()}}
           </small>
         </strong>
       </p>
-      <router-link to="/card">
-        <button class="btn primary">Посмотреть</button>
-      </router-link>
+      <button class="btn primary">Посмотреть</button>
     </div>
   </template>
 </template>
@@ -25,7 +23,6 @@
 import AppStatus from '../components/AppStatus'
 
 export default {
-  props: ['task'],
-  components: { AppStatus }
+  components: {AppStatus}
 }
 </script>
