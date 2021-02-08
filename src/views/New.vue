@@ -1,5 +1,5 @@
 <template>
-    <form class="card" @submit.prevent="$emit('sendForm',$event)">
+    <form class="card" @submit.prevent="$emit('sendForm')">
         <h1>Создать новую задачу</h1>
         <div class="form-control"
              v-for="item in formDesc"
@@ -16,14 +16,14 @@
                 <textarea :id="item.id" v-model="text" @input="getValueTextarea"></textarea>
             </label>
         </div>
-        <button class="btn primary" :disabled="!disable">Создать</button>
+        <button class="btn primary" :disabled="!disable" @click="$emit('loadTask')">Создать</button>
     </form>
 </template>
 
 <script>
 
 export default {
-    emits: ['getValueInput', 'sendForm', 'userChange'],
+    emits: ['getValueInput', 'sendForm', 'userChange', 'loadTask'],
     props: {
         disable: Boolean,
         formDesc: {
