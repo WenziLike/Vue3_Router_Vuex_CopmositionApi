@@ -1,41 +1,44 @@
 <template>
-    <form class="card" @click.prevent="$emit('sendForm')">
+    <form class="card" @submit.prevent="$emit('sendForm',$event)">
         <h1>Создать новую задачу</h1>
-        <div class="form-control" v-for="item in formDesc" :key="item.id"
-             @change="$emit('selectedItem',$event.target)">
+        <div class="form-control"
+             v-for="item in formDesc"
+             :key="item.id">
             <label :for="item.id" v-if="item.type">
                 {{ item.title }}
                 <input :type="item.type"
                        :id="item.id"
-                       ref="arr"
-                       @click="$event.stopPropagation()">
+                       @change="$emit('getValueInput',$event.target)"
+                >
             </label>
             <label :for="item.id" v-else>
                 {{ item.title }}
-                <textarea :id="item.id"></textarea>
+                <textarea :id="item.id" v-model="text" @input="getValueTextarea"></textarea>
             </label>
         </div>
-        <button class="btn primary">Создать</button>
+        <button class="btn primary" :disabled="!disable">Создать</button>
     </form>
 </template>
 
 <script>
 
 export default {
-    emits: {
-        sendForm: null,
-        selectedItem(event) {
-            if (event.value) {
-                return true
-            }
-            confirm('Вы уверенны что хотите оставить поле пустым???')
-            return false
+    emits: ['getValueInput', 'sendForm', 'userChange'],
+    props: {
+        disable: Boolean,
+        formDesc: {
+            type: Array,
+            required: true
         }
     },
-    props: {
-        formDesc: {
-            type: Object,
-            required: true
+    data() {
+        return {
+            text: ''
+        }
+    },
+    methods: {
+        getValueTextarea() {
+            this.$emit('userChange', this.text)
         }
     }
 }

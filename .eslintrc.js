@@ -24,7 +24,6 @@ module.exports = {
         'eol-last': 0,
         'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 0 }],
         'comma-dangle': ['error', 'only-multiline'],
-        // semi: ['error', 'always', { omitLastInOneLineBlock: true }],
         semi: ['error', 'never'],
         'space-before-function-paren': ['error', {
             anonymous: 'always',
@@ -37,9 +36,8 @@ module.exports = {
             4,
             { SwitchCase: 1 }
         ],
-        // 'space-in-parens': ['error', 'always', { exceptions: ['{}', '[]'] }],
-        // 'key-spacing': [0, { beforeColon: false, afterColon: true }],
         'space-in-parens': 0,
         'key-spacing': 0,
+        // 'no-unused-expressions': [2, { allowShortCircuit: true, allowTernary: true }]
     }
 }
