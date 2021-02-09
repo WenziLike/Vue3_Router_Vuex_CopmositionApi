@@ -1,5 +1,5 @@
 <template>
-    <form class="card" @submit.prevent="$emit('sendForm')">
+    <form class="card" @submit.prevent="submit">
         <h1>Создать новую задачу</h1>
         <div class="form-control"
              v-for="item in formDesc"
@@ -8,38 +8,61 @@
                 {{ item.title }}
                 <input :type="item.type"
                        :id="item.id"
-                       @change="$emit('getValueInput',$event.target)"
+                       @change="isValue($event.target)"
                 >
             </label>
             <label :for="item.id" v-else>
                 {{ item.title }}
-                <textarea :id="item.id" v-model="text" @input="getValueTextarea"></textarea>
+                <textarea :id="item.id" v-model="description"></textarea>
             </label>
         </div>
-        <button class="btn primary" :disabled="!disable" @click="$emit('loadTask')">Создать</button>
+        <button class="btn primary" :disabled="!isDisable">Создать</button>
     </form>
 </template>
 
 <script>
-
 export default {
-    emits: ['getValueInput', 'sendForm', 'userChange', 'loadTask'],
-    props: {
-        disable: Boolean,
-        formDesc: {
-            type: Array,
-            required: true
-        }
-    },
+    // props: {
+    //     formDesc: {
+    //         type: Array,
+    //         required: true
+    //     }
+    // },
     data() {
         return {
-            text: ''
+            title: '',
+            date: '',
+            description: ''
         }
     },
-    methods: {
-        getValueTextarea() {
-            this.$emit('userChange', this.text)
+    computed: {
+        isDisable() {
+            return !!(this.title && this.date && this.description)
         }
+    },
+    inject: [
+        'formDesc',
+        'sendForm',
+        'loadTask'
+    ],
+    methods: {
+        submit() {
+            this.sendForm({
+                title: this.title,
+                date: this.date,
+                description: this.description
+            })
+            this.loadTask()
+            this.$router.push('/tasks')
+        },
+        isValue(event) {
+            if (event.type === 'text') {
+                this.title = event.value
+            } else {
+                this.date = event.value
+            }
+        }
+
     }
 }
 </script>
